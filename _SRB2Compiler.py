@@ -1,5 +1,5 @@
 '''
-# SRB2Compiler v1.99 by Lumyni
+# SRB2Compiler v1.991 by Lumyni
 # Requires https://www.python.org/ and https://www.7-zip.org/
 # Messes w/ files, only edit this if you know what you're doing!
 '''
@@ -248,6 +248,7 @@ class UX:
                 self.cfg2b.place(x=L, y=OFFSET+SPACING*10) 
             elif self.box1.get() == self.box1.cget('values')[2]: #decompiler
                 self.b3.place(x=L, y=SPACING)
+                self.inf2.place(x=SPACING, y=00)
                 if not self.cfg4.get(): self.b4.place(x=L, y=SPACING*2)
             elif self.box1.get() == self.box1.cget('values')[3]: #decompiler settings
                 self.inf1.place(x=SPACING, y=00)
@@ -328,7 +329,7 @@ class UX:
             return values
 
         def savepreset():
-            path = filedialog.asksaveasfilename(defaultextension=".preset")
+            path = filedialog.asksaveasfilename(defaultextension=".lumy")
             if not path == '':
                 run(path, *list(getEVERYTHING()))
                 global preset
@@ -379,6 +380,7 @@ class UX:
         self.b4=customtkinter.CTkButton(self.frame_1, text='Sort files', command= lambda: sortbynumber(self.t5.get()))
         self.b5=customtkinter.CTkButton(self.frame_1, text='Clean ALL logs', command= lambda: clean_logs(self.t6.get(), "ALL"))
         self.b6=customtkinter.CTkButton(self.frame_1, text='Test', command= lambda: test(self.t4.get()))
+        self.inf2=customtkinter.CTkLabel(self.frame_1, text='NOTE: This does not work with SKINS yet', text_color='#FFFF00')
         self.cfg1=customtkinter.CTkCheckBox(master=self.frame_1, text="Automatically save after compiling")
         self.cfg2=customtkinter.CTkCheckBox(master=self.frame_1, text="Automatically delete log after compiling")
         self.cfg2b=customtkinter.CTkCheckBox(master=self.frame_1, text="Automatically CLEAR ALL logs after compiling")

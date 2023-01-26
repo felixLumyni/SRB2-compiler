@@ -1,5 +1,5 @@
 '''
-# SRB2Compiler (Compatibility Mode) v1.991 by Lumyni
+# SRB2Compiler (Compatibility Mode) v1.992 by Lumyni
 # Requires https://www.python.org/ and https://www.7-zip.org/
 # Messes w/ files, only edit this if you know what you're doing!
 '''
@@ -8,16 +8,17 @@ import os, shutil, importlib, sys, subprocess, tkinter
 from tkinter import messagebox, filedialog
 from os.path import splitext
 from collections import Counter
+from importlib import util
 from tkinter import ttk
 from tkinter import *
 
 def import_path(path):
     module_name = os.path.basename(path).replace('-', '_')
-    spec = importlib.util.spec_from_loader(
+    spec = util.spec_from_loader(
         module_name,
         importlib.machinery.SourceFileLoader(module_name, path)
     )
-    module = importlib.util.module_from_spec(spec)
+    module = util.module_from_spec(spec)
     spec.loader.exec_module(module)
     sys.modules[module_name] = module
     return module

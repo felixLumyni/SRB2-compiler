@@ -10,13 +10,13 @@ A python program to automate the proccess of making [SRB2](https://www.srb2.org/
 - Having your mod outside of a compressed file also allows mods to be edited more easily with apps other than [SLADE](https://github.com/sirjuddington/SLADE)
 - The **compiler** tool can automate the process of saving your mod to a PK3 every time you want to test the mod
 - The **decompiler** tool can automate the process of exporting your PK3 mod to a folder so it can be versioned with git
-- Your settings are saved automatically based on the file name. Expand the window vertically in the **Compiler** menu to save custom presets
+- Your settings are saved automatically based on the file name. You can also expand the window vertically in the **Compiler** menu to save and load custom presets
 
 ## How to use this to build and test your mod
 - Open the .py file with [Python](https://www.python.org/)
-- Compiler settings page: Specify where your [7-Zip](https://www.7-zip.org/) is installed
 - Compiler settings page: Specify which folder will be converted into a pk3
-- Compiler settings page: Optionally, specify a .bat to automatically launch SRB2 with your mod after compiling (Example: ``srb2win.exe -debug -opengl -warp 1 -file MyCoolMod.pk3 +weather 1``)
+- (OPTIONAL) Compiler settings page: Specify where the pk3 will be moved to afterwards (By default, it goes to wherever the compiler is)
+- (OPTIONAL) Compiler settings page: Specify a .bat to automatically launch SRB2 with your mod after compiling (Example: ``srb2win.exe -debug -opengl -warp 1 -file MyCoolMod.pk3 +weather 1``)
 - Compiler page: Compile and/or test the mod
 
 ## How to use this to export your PK3 mod

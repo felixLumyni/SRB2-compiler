@@ -1,5 +1,5 @@
 '''
-# SRB2Compiler v1.992 by Lumyni
+# SRB2Compiler v1.993 by Lumyni
 # Requires https://www.python.org/ and https://www.7-zip.org/
 # Messes w/ files, only edit this if you know what you're doing!
 '''
@@ -51,42 +51,48 @@ def import_required_modules(modules):
 
 def import_path(path):
     module_name = os.path.basename(path).replace('-', '_')
-    spec = util.spec_from_loader(
-        module_name,
-        importlib.machinery.SourceFileLoader(module_name, path)
-    )
+    spec = util.spec_from_loader(module_name, importlib.machinery.SourceFileLoader(module_name, path))
     module = util.module_from_spec(spec)
     spec.loader.exec_module(module)
     sys.modules[module_name] = module
     return module
 
-def clean(sevenzip, result):
-    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+def clean(location, result, destination, usesevenziptocompile, sevenzip):
+    os.chdir(destination)
     toclean = {
-        "previous "+result+".zip from the 7zip directory" : os.path.join(sevenzip, result+".zip"),
-        "previous "+result+".pk3 from the 7zip directory" : os.path.join(sevenzip, result+".pk3"),
-        "previous result ("+result+".pk3)" : os.path.join(os.getcwd(), result+".pk3")
+        "previous zip ("+result+".zip)" : os.path.join(location, result+".zip"),
+        "previous pk3 ("+result+".pk3)" : os.path.join(location, result+".pk3"),
+        "previous pk3 ("+result+".pk3) from destination" : os.path.join(os.getcwd(), result+".pk3")
     }
+    if usesevenziptocompile:
+        toclean["previous zip ("+result+".zip) from the 7zip directory"] = os.path.join(sevenzip, result+".zip")
+        toclean["previous pk3 ("+result+".pk3) from the 7zip directory"] = os.path.join(sevenzip, result+".pk3")
     for step in toclean:
         path = toclean[step]
         if os.path.exists(path):
             os.unlink(path) ; print(f"Removed {step}.")
         else:
-            print(f"Couldn't find {step}, continuing anyway")
+            print(f"Couldn't find {step}, all clear.")
 
-def ziptopk3here(sevenzip, location, result):
-    os.chdir(sevenzip)
-    location = '"'+location+'"'
-    print("----- 7ZIP -----")
-    os.system('7z a '+result+'.zip '+location+"\\* -x!.git")
-    print("----- END OF 7ZIP -----")
+def ziptopk3here(location, result, destination, usesevenziptocompile, sevenzip):
+    if usesevenziptocompile:
+        os.chdir(sevenzip)
+        print("----- 7ZIP -----")
+        os.system('7z a '+result+'.zip '+location+"\\* -x!.git")
+        print("----- END OF 7ZIP -----")
+    else:
+        os.chdir(location)
+        print("----- ZIP COMMAND -----")
+        os.system(f'zip {result}.zip -r ../{location} --archive-clear --compression-method deflate -9 -X * -x!.git"')
+        print("----- END OF ZIP COMMAND -----")
+        
     print("Location compiled to .zip")
 
-    os.rename(os.path.join(sevenzip, result+'.zip'), result+'.pk3')
+    os.rename(os.path.join(os.getcwd(), result+'.zip'), result+'.pk3')
     print("Changed from .zip to .pk3")
 
-    shutil.move(os.path.join(sevenzip, result+".pk3"), os.path.dirname(os.path.realpath(__file__)))
-    print("Shipped the pk3 to your current location (<3)")
+    shutil.move(os.path.join(os.getcwd(), result+".pk3"), destination)
+    print(f"Moved the result pk3 to {destination}")
 
 def unzip(sevenzip, pk3toextract, autosort=0):
     sevenzip = validate_path(sevenzip, "sevenzip's path")
@@ -126,7 +132,7 @@ def unzip(sevenzip, pk3toextract, autosort=0):
     print("Moved the folder to the same location as the pk3")
     if autosort: sortbynumber(pk3toextract)
 
-def sortbynumber(pk3toextract): #TODO: find out why srb2 still doesn't like it
+def sortbynumber(pk3toextract): #TODO: SOMEHOW MOVE S_SKIN TO THE ABSOLUTE TOP
     search_dir = pk3toextract.replace('.pk3','')
     search_dir = search_dir.replace('"','')
     print(f"Organizing lumps in {search_dir}...")
@@ -140,7 +146,7 @@ def sortbynumber(pk3toextract): #TODO: find out why srb2 still doesn't like it
             basename = os.path.basename(file).replace(ext,'')
             filepath = os.path.join(str(subdir),str(file))
             filepath = check_conflicts(filepath, basename, subdir, ext)
-            if subdir and basename[len(basename)-index] == "_": #THIS MEANS IT ONLY GOES UP TO _9
+            if subdir and basename[len(basename)-index] == "_": #THIS MEANS IT ONLY GOES UP TO "_9"
                 print('* Found duplicate file: ' + filepath)
 
                 #paranoia
@@ -230,23 +236,27 @@ class UX:
                 self.t3.configure(state=customtkinter.NORMAL)
                 self.t4.configure(state=customtkinter.NORMAL)
                 self.t6.configure(state=customtkinter.NORMAL)
+                self.t7.configure(state=customtkinter.NORMAL)
                 self.inf1.place(x=SPACING, y=00)
                 self.b1.place(x=L, y=SPACING)
                 self.lbl1.place(x=L, y=(OFFSET/2)+SPACING*2)
-                self.lbl2.place(x=L, y=(OFFSET/2)+SPACING*3)
-                self.lbl3.place(x=L, y=(OFFSET/2)+SPACING*4)
+                self.lbl3.place(x=L, y=(OFFSET/2)+SPACING*3)
+                self.lbl7.place(x=L, y=(OFFSET/2)+SPACING*4)
                 self.lbl4.place(x=L, y=OFFSET+SPACING*8)
                 self.lbl6.place(x=L, y=OFFSET+SPACING*9)
                 self.t1.place(x=R, y=(OFFSET/2)+SPACING*2)
-                self.t2.place(x=R, y=(OFFSET/2)+SPACING*3)
-                self.t3.place(x=R, y=(OFFSET/2)+SPACING*4)
+                self.t3.place(x=R, y=(OFFSET/2)+SPACING*3)
+                self.t7.place(x=R, y=(OFFSET/2)+SPACING*4)
                 self.t4.place(x=R, y=OFFSET+SPACING*8)
                 self.t6.place(x=R, y=OFFSET+SPACING*9)
                 self.cfg1.place(x=L, y=OFFSET+SPACING*5)
                 self.cfg2.place(x=L, y=OFFSET+SPACING*6)
                 self.cfg3.place(x=L, y=OFFSET+SPACING*7)
                 '''offscreen'''
-                self.cfg2b.place(x=L, y=OFFSET+SPACING*10) 
+                self.cfg2b.place(x=L, y=OFFSET+SPACING*10.5)
+                self.cfg5.place(x=L, y=OFFSET+SPACING*11.5)
+                self.lbl2.place(x=L, y=OFFSET+SPACING*12.5)
+                self.t2.place(x=R, y=OFFSET+SPACING*12.5)
             elif self.box1.get() == self.box1.cget('values')[2]: #decompiler
                 self.b3.place(x=L, y=SPACING)
                 self.inf2.place(x=SPACING, y=00)
@@ -268,7 +278,7 @@ class UX:
                 if self.cfg2b.get(): self.b5.place(x=L, y=SPACING*bt); bt += 1
                 if not self.cfg3.get(): self.b6.place(x=L, y=SPACING*bt)
                 '''offscreen'''
-                self.lbl7.place(x=L, y=SPACING*10.1)
+                self.preset.place(x=L, y=SPACING*10.1)
                 self.b7.place(x=L,y=SPACING*11)
                 self.b8.place(x=R,y=SPACING*11)
             else:
@@ -291,11 +301,6 @@ class UX:
             if switchswitch: self.swi1.select() if not self.swi1.get() else self.swi1.deselect()
 
         def resetEntries():
-            #delete
-            for i in enumerate(self.frame_1.winfo_children()):
-                if 'ctkentry' in str(i[1]):
-                    self.frame_1.winfo_children()[i[0]].delete(0,customtkinter.END)
-            #load 
             try: self.t1.insert(0,settings.result)
             except: pass
             try: self.t2.insert(0,settings.sevenzip)
@@ -308,6 +313,8 @@ class UX:
             except: pass
             try: self.t6.insert(0,settings.logs)
             except: pass
+            try: self.t7.insert(0,settings.destination)
+            except: pass
             try: self.cfg1.select() if settings.autosave else self.cfg1.deselect()
             except: self.cfg1.select()
             try: self.cfg2.select() if settings.autormlog else self.cfg2.deselect()
@@ -318,6 +325,8 @@ class UX:
             except: self.cfg3.select()
             try: self.cfg4.select() if settings.autosort else self.cfg4.deselect()
             except: self.cfg4.select()
+            try: self.cfg5.select() if settings.usesevenziptocompile else self.cfg5.deselect()
+            except: self.cfg5.select()
             try: switchDark(True) if settings.appearancemode else "pass" #why must this be a string?
             except: pass
 
@@ -335,7 +344,7 @@ class UX:
                 run(path, *list(getEVERYTHING()))
                 global preset
                 preset = path
-                self.lbl7.configure(text = f'Current preset: {os.path.basename(preset)}')
+                self.preset.configure(text = f'Current preset: {os.path.basename(preset)}')
 
         def loadpreset():
             path = filedialog.askopenfilename()
@@ -365,16 +374,18 @@ class UX:
         self.inf1=customtkinter.CTkLabel(self.frame_1, text='Make sure the paths do not require admin!')
         self.lbl1=customtkinter.CTkLabel(self.frame_1, text='Mod name (without .pk3)')
         self.lbl2=customtkinter.CTkButton(self.frame_1, text='Path to 7Zip', fg_color="#424242", hover_color="#696969", command= lambda: smartDirPath(self.t2))
-        self.lbl3=customtkinter.CTkButton(self.frame_1, text='Path to the mod', fg_color="#424242", hover_color="#696969", command= lambda: smartDirPath(self.t3))
+        self.lbl3=customtkinter.CTkButton(self.frame_1, text='Path to compile (Mod)', fg_color="#424242", hover_color="#696969", command= lambda: smartDirPath(self.t3))
         self.lbl4=customtkinter.CTkButton(self.frame_1, text='Path to test file (.bat)', fg_color="#424242", hover_color="#696969", command= lambda: smartPath(self.t4))
         self.lbl5=customtkinter.CTkButton(self.frame_1, text='Path to PK3 to extract', fg_color="#424242", hover_color="#696969", command= lambda: smartPath(self.t5))
         self.lbl6=customtkinter.CTkButton(self.frame_1, text='Path to logs', fg_color="#424242", hover_color="#696969", command= lambda: smartDirPath(self.t6))
+        self.lbl7=customtkinter.CTkButton(self.frame_1, text='Path: Mod destination', fg_color="#424242", hover_color="#696969", command= lambda: smartDirPath(self.t7))
         self.t1=customtkinter.CTkEntry(self.frame_1)
         self.t2=customtkinter.CTkEntry(self.frame_1)
         self.t3=customtkinter.CTkEntry(self.frame_1)
         self.t4=customtkinter.CTkEntry(self.frame_1)
         self.t5=customtkinter.CTkEntry(self.frame_1)
         self.t6=customtkinter.CTkEntry(self.frame_1)
+        self.t7=customtkinter.CTkEntry(self.frame_1, placeholder_text='Default: This .py')
         self.b1=customtkinter.CTkButton(self.frame_1, text='Save settings', command= lambda: run(True, *list(getEVERYTHING())))
         self.b2=customtkinter.CTkButton(self.frame_1, text='Compile', command= lambda: run(False, *list(getEVERYTHING())))
         self.b3=customtkinter.CTkButton(self.frame_1, text='Decompile', command= lambda: unzip(self.t2.get(),self.t5.get(),self.cfg4.get()))
@@ -387,7 +398,8 @@ class UX:
         self.cfg2b=customtkinter.CTkCheckBox(master=self.frame_1, text="Automatically CLEAR ALL logs after compiling")
         self.cfg3=customtkinter.CTkCheckBox(master=self.frame_1, text="Automatically run test file after compiling")
         self.cfg4=customtkinter.CTkCheckBox(master=self.frame_1, text="Automatically sort files after decompiling")
-        self.lbl7=customtkinter.CTkLabel(self.frame_1, text=f'Current preset: {os.path.basename(preset)}')
+        self.cfg5=customtkinter.CTkCheckBox(master=self.frame_1, text="Use 7Zip to compile")
+        self.preset=customtkinter.CTkLabel(self.frame_1, text=f'Current preset: {os.path.basename(preset)}')
         self.b7=customtkinter.CTkButton(self.frame_1, text='Save preset', command= lambda: savepreset())
         self.b8=customtkinter.CTkButton(self.frame_1, text='Load preset', command= lambda: loadpreset())
         self.swi1=customtkinter.CTkSwitch(self.frame_1, text="", command=switchDark)
@@ -440,25 +452,22 @@ def main(settingsfile=None):
     GUI = UX(root, warn)
     root.title("SRB2Compiler")
     root.geometry('320x320')
-    '''
-    #root.iconbitmap("myIcon.ico")
-    #root.resizable(False, False)
-    #root.overrideredirect(1)
-    #root.attributes("-alpha",1)
-    #root.attributes("-topmost", 1)
-    '''
     root.mainloop()
 
-def run(onlysave=False, result='', sevenzip='', location='', testbat='', pk3toextract='', logs='',
-        autosave=None, autormlog=None, autoclear=None, autotest=None, autosort=None, appearancemode=0):
+def run(onlysave=False, result='', sevenzip='', location='', testbat='', pk3toextract='', logs='', destination='',
+        autosave=None, autormlog=None, autoclear=None, autotest=None, autosort=None, usesevenziptocompile=None,
+        appearancemode=0):
     variables = vars()
     if not(onlysave):
         sevenzip = validate_path(sevenzip, "sevenzip's path")
         location = validate_path(location, "the location of the mod")
         if not(sevenzip and location): return
         try:
-            clean(sevenzip, result)
-            ziptopk3here(sevenzip, location, result)
+            if destination == '': destination = os.path.dirname(os.path.realpath(__file__))
+            else: destination = validate_path(destination, "the destination of the mod")
+            if not destination: return
+            clean(location, result, destination, usesevenziptocompile, sevenzip)
+            ziptopk3here(location, result, destination, usesevenziptocompile, sevenzip)
         except Exception as e:
             print(f"ERROR: {e}")
             messagebox.showerror(title="Error", message=e)
@@ -505,12 +514,10 @@ def clean_logs(folder, all=False):
         for filename in os.listdir(folder):
             file_path = os.path.join(folder, filename)
             try:
-                if os.path.isfile(file_path): #or os.path.islink(file_path):
+                if os.path.isfile(file_path):
                     os.unlink(file_path)
                     print(f"Unlinked: {filename}")
                     count += 1
-                #elif os.path.isdir(file_path):
-                    #shutil.rmtree(file_path)
             except Exception as e:
                 print('Failed to delete %s. Reason: %s' % (file_path, e))
         print(f"Finished cleaning, {count} files total.")

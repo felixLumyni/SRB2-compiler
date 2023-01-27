@@ -1,5 +1,5 @@
 '''
-# SRB2Compiler (Compatibility Mode) v1.994 by Lumyni
+# SRB2Compiler (Compatibility Mode) v1.995 by Lumyni
 # Requires https://www.python.org/ and https://www.7-zip.org/
 # Messes w/ files, only edit this if you know what you're doing!
 '''
@@ -430,13 +430,15 @@ def run(onlysave=False, result='', sevenzip='', location='', testbat='', pk3toex
     variables = vars()
     if not(onlysave):
         location = validate_path(location, "the location of the mod")
-        if not(sevenzip and location): return
+        if not location: return
         try:
             if destination == '': destination = os.path.dirname(os.path.realpath(__file__))
             else: destination = validate_path(destination, "the destination of the mod")
             if not destination: return
             if usesevenziptocompile: sevenzip = validate_path(sevenzip, "sevenzip's path")
-            if not sevenzip: return
+            if usesevenziptocompile:
+                sevenzip = validate_path(sevenzip, "sevenzip's path")
+                if not sevenzip: return
             clean(location, result, destination, usesevenziptocompile, sevenzip)
             ziptopk3here(location, result, destination, usesevenziptocompile, sevenzip)
         except Exception as e:

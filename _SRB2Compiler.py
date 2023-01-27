@@ -1,5 +1,5 @@
 '''
-# SRB2Compiler v1.993 by Lumyni
+# SRB2Compiler v1.994 by Lumyni
 # Requires https://www.python.org/ and https://www.7-zip.org/
 # Messes w/ files, only edit this if you know what you're doing!
 '''

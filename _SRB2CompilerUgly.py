@@ -8,13 +8,13 @@ import os, shutil, importlib, sys, subprocess, tkinter
 from tkinter import messagebox, filedialog
 from os.path import splitext
 from collections import Counter
-from importlib import util
+from importlib import util, machinery
 from tkinter import ttk
 from tkinter import *
 
 def import_path(path):
     module_name = os.path.basename(path).replace('-', '_')
-    spec = util.spec_from_loader(module_name, importlib.machinery.SourceFileLoader(module_name, path))
+    spec = util.spec_from_loader(module_name, machinery.SourceFileLoader(module_name, path))
     module = util.module_from_spec(spec)
     spec.loader.exec_module(module)
     sys.modules[module_name] = module

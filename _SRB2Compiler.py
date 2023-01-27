@@ -8,7 +8,7 @@ import os, shutil, importlib, sys, subprocess
 from tkinter import messagebox, filedialog
 from os.path import splitext
 from collections import Counter
-from importlib import util
+from importlib import util, machinery
 
 def import_required_modules(modules):
     for (module,link,targetversion) in modules:
@@ -51,7 +51,7 @@ def import_required_modules(modules):
 
 def import_path(path):
     module_name = os.path.basename(path).replace('-', '_')
-    spec = util.spec_from_loader(module_name, importlib.machinery.SourceFileLoader(module_name, path))
+    spec = util.spec_from_loader(module_name, importlib.SourceFileLoader(module_name, path))
     module = util.module_from_spec(spec)
     spec.loader.exec_module(module)
     sys.modules[module_name] = module

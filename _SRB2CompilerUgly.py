@@ -282,7 +282,7 @@ class UX:
             try: self.cfg4.select() if settings.autosort else self.cfg4.deselect()
             except: self.cfg4.select()
             try: self.cfg5.select() if settings.usesevenziptocompile else self.cfg5.deselect()
-            except: self.cfg5.select()
+            except: self.cfg5.deselect()
 
         def getEVERYTHING(): #IMPORTANT: this gets the values based in the order of creation of the entries; mind the run() function
             values = []
@@ -425,7 +425,7 @@ def main(settingsfile=None):
     root.geometry('320x320')
     root.mainloop()
 
-def run(onlysave=False, result='', sevenzip='', location='', testbat='', pk3toextract='', logs='', destination=''
+def run(onlysave=False, result='', sevenzip='', location='', testbat='', pk3toextract='', logs='', destination='',
         autosave=None, autormlog=None, autoclear=None, autotest=None, autosort=None, usesevenziptocompile=None):
     variables = vars()
     if not(onlysave):

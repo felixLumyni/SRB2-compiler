@@ -326,7 +326,7 @@ class UX:
             try: self.cfg4.select() if settings.autosort else self.cfg4.deselect()
             except: self.cfg4.select()
             try: self.cfg5.select() if settings.usesevenziptocompile else self.cfg5.deselect()
-            except: self.cfg5.select()
+            except: self.cfg5.deselect()
             try: switchDark(True) if settings.appearancemode else "pass" #why must this be a string?
             except: pass
 

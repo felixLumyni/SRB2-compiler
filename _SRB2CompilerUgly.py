@@ -429,13 +429,14 @@ def run(onlysave=False, result='', sevenzip='', location='', testbat='', pk3toex
         autosave=None, autormlog=None, autoclear=None, autotest=None, autosort=None, usesevenziptocompile=None):
     variables = vars()
     if not(onlysave):
-        sevenzip = validate_path(sevenzip, "sevenzip's path")
         location = validate_path(location, "the location of the mod")
         if not(sevenzip and location): return
         try:
             if destination == '': destination = os.path.dirname(os.path.realpath(__file__))
             else: destination = validate_path(destination, "the destination of the mod")
             if not destination: return
+            if usesevenziptocompile: sevenzip = validate_path(sevenzip, "sevenzip's path")
+            if not sevenzip: return
             clean(location, result, destination, usesevenziptocompile, sevenzip)
             ziptopk3here(location, result, destination, usesevenziptocompile, sevenzip)
         except Exception as e:

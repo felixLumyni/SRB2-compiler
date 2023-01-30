@@ -15,6 +15,7 @@ A python program to automate the proccess of making [SRB2](https://www.srb2.org/
 ## How to use this to build and test your mod
 - Open the .py file with [Python](https://www.python.org/)
 - Compiler settings page: Specify which folder will be converted into a pk3
+- Compiler settings page: Specify where your [7-Zip](https://www.7-zip.org/) is installed
 - (OPTIONAL) Compiler settings page: Specify the preferred filename for the pk3
 - (OPTIONAL) Compiler settings page: Specify where the pk3 will be moved to afterwards (By default, it goes to wherever the compiler is)
 - (OPTIONAL) Compiler settings page: Specify a .bat to automatically launch SRB2 with your mod after compiling (Example: ``srb2win.exe -debug -opengl -warp 1 -file MyCoolMod.pk3 +weather 1``)

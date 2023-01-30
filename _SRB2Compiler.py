@@ -1,5 +1,5 @@
 '''
-# SRB2Compiler v1.995 by Lumyni
+# SRB2Compiler v1.996 by Lumyni
 # Requires https://www.python.org/ and https://www.7-zip.org/
 # Messes w/ files, only edit this if you know what you're doing!
 '''
@@ -57,35 +57,24 @@ def import_path(path):
     sys.modules[module_name] = module
     return module
 
-def clean(location, result, destination, usesevenziptocompile, sevenzip):
-    os.chdir(destination)
+def clean(sevenzip, result, destination):
     toclean = {
-        "previous zip ("+result+".zip)" : os.path.join(location, result+".zip"),
-        "previous pk3 ("+result+".pk3)" : os.path.join(location, result+".pk3"),
-        "previous pk3 ("+result+".pk3) from destination" : os.path.join(os.getcwd(), result+".pk3")
+        "previous zip ("+result+".zip)" : os.path.join(sevenzip, result+".zip"),
+        "previous pk3 ("+result+".pk3)" : os.path.join(sevenzip, result+".pk3"),
+        "previous pk3 ("+result+".pk3) from destination" : os.path.join(destination, result+".pk3")
     }
-    if usesevenziptocompile:
-        toclean["previous zip ("+result+".zip) from the 7zip directory"] = os.path.join(sevenzip, result+".zip")
-        toclean["previous pk3 ("+result+".pk3) from the 7zip directory"] = os.path.join(sevenzip, result+".pk3")
     for step in toclean:
         path = toclean[step]
         if os.path.exists(path):
             os.unlink(path) ; print(f"Removed {step}.")
         else:
-            print(f"Couldn't find {step}, all clear.")
+            pass #print(f"Couldn't find {step}, all clear.")
 
-def ziptopk3here(location, result, destination, usesevenziptocompile, sevenzip):
-    if usesevenziptocompile:
-        os.chdir(sevenzip)
-        print("----- 7ZIP -----")
-        os.system('7z a '+result+'.zip '+location+"\\* -x!.git")
-        print("----- END OF 7ZIP -----")
-    else:
-        os.chdir(location)
-        print("----- ZIP COMMAND -----")
-        os.system(f'zip {result}.zip -r ../{location} --archive-clear --compression-method deflate -9 -X * -x!.git"')
-        print("----- END OF ZIP COMMAND -----")
-        
+def ziptopk3(location, result, destination, sevenzip):
+    os.chdir(sevenzip)
+    print("----- 7ZIP -----")
+    os.system('7z a '+result+'.zip '+location+"\\* -x!.git")
+    print("----- END OF 7ZIP -----")
     print("Location compiled to .zip")
 
     os.rename(os.path.join(os.getcwd(), result+'.zip'), result+'.pk3')
@@ -217,7 +206,7 @@ def test(testbat):
         print(f'ERROR: Failed to run the test file. Reason: {e}')
         messagebox.showerror(title='Error', message="Couldn't execute the test file.\nCheck the console for details.")
 
-class UX:
+class UI:
     def __init__(self, root, warn):
         def layoutMode(mode=None):
             if mode: self.box1.set(mode)
@@ -238,28 +227,28 @@ class UX:
                 self.t6.configure(state=customtkinter.NORMAL)
                 self.t7.configure(state=customtkinter.NORMAL)
                 self.inf1.place(x=SPACING, y=00)
+                self.inf2.place(x=R/1.5, y=(OFFSET/2)+SPACING*4)
                 self.b1.place(x=L, y=SPACING)
-                self.lbl1.place(x=L, y=(OFFSET/2)+SPACING*2)
-                self.lbl3.place(x=L, y=(OFFSET/2)+SPACING*3)
-                self.lbl7.place(x=L, y=(OFFSET/2)+SPACING*4)
-                self.lbl4.place(x=L, y=OFFSET+SPACING*8)
-                self.lbl6.place(x=L, y=OFFSET+SPACING*9)
-                self.t1.place(x=R, y=(OFFSET/2)+SPACING*2)
-                self.t3.place(x=R, y=(OFFSET/2)+SPACING*3)
-                self.t7.place(x=R, y=(OFFSET/2)+SPACING*4)
-                self.t4.place(x=R, y=OFFSET+SPACING*8)
-                self.t6.place(x=R, y=OFFSET+SPACING*9)
-                self.cfg1.place(x=L, y=OFFSET+SPACING*5)
-                self.cfg2.place(x=L, y=OFFSET+SPACING*6)
-                self.cfg3.place(x=L, y=OFFSET+SPACING*7)
+                self.lbl2.place(x=L, y=(OFFSET/2)+SPACING*3)
+                self.lbl3.place(x=L, y=(OFFSET/2)+SPACING*2)
+                self.lbl1.place(x=L, y=(OFFSET/2)+SPACING*5)
+                self.lbl7.place(x=L, y=(OFFSET/2)+SPACING*6)
+                self.lbl4.place(x=L, y=(OFFSET/2)+SPACING*7)
+                self.t2.place(x=R, y=(OFFSET/2)+SPACING*3)
+                self.t3.place(x=R, y=(OFFSET/2)+SPACING*2)
+                self.t1.place(x=R, y=(OFFSET/2)+SPACING*5)
+                self.t7.place(x=R, y=(OFFSET/2)+SPACING*6)
+                self.t4.place(x=R, y=(OFFSET/2)+SPACING*7)
+                self.cfg1.place(x=L, y=OFFSET+SPACING*8)
+                self.cfg3.place(x=L, y=OFFSET+SPACING*9)
                 '''offscreen'''
-                self.cfg2b.place(x=L, y=OFFSET+SPACING*10.5)
-                self.cfg5.place(x=L, y=OFFSET+SPACING*11.5)
-                self.lbl2.place(x=L, y=OFFSET+SPACING*12.5)
-                self.t2.place(x=R, y=OFFSET+SPACING*12.5)
+                self.cfg2.place(x=L, y=OFFSET+SPACING*10.5)
+                self.cfg2b.place(x=L, y=OFFSET+SPACING*11.5)
+                self.lbl6.place(x=L, y=OFFSET+SPACING*12.5)
+                self.t6.place(x=R, y=OFFSET+SPACING*12.5)
             elif self.box1.get() == self.box1.cget('values')[2]: #decompiler
                 self.b3.place(x=L, y=SPACING)
-                self.inf2.place(x=SPACING, y=00)
+                self.inf3.place(x=SPACING, y=00)
                 if not self.cfg4.get(): self.b4.place(x=L, y=SPACING*2)
             elif self.box1.get() == self.box1.cget('values')[3]: #decompiler settings
                 self.inf1.place(x=SPACING, y=00)
@@ -297,7 +286,6 @@ class UX:
         def switchDark(switchswitch=False):
             theme = customtkinter.get_appearance_mode()
             customtkinter.set_appearance_mode("Dark") if theme == "Light" else customtkinter.set_appearance_mode("Light")
-            run(True, *list(getEVERYTHING()))
             if switchswitch: self.swi1.select() if not self.swi1.get() else self.swi1.deselect()
 
         def resetEntries():
@@ -325,8 +313,6 @@ class UX:
             except: self.cfg3.select()
             try: self.cfg4.select() if settings.autosort else self.cfg4.deselect()
             except: self.cfg4.select()
-            try: self.cfg5.select() if settings.usesevenziptocompile else self.cfg5.deselect()
-            except: self.cfg5.deselect()
             try: switchDark(True) if settings.appearancemode else "pass" #why must this be a string?
             except: pass
 
@@ -371,34 +357,34 @@ class UX:
         self.frame_1=customtkinter.CTkFrame(master=root)
         self.frame_1.pack(pady=10, padx=10, expand=True, fill="both")
         self.box1=customtkinter.CTkComboBox(self.frame_1, values=["Compiler", "Compiler settings", "Decompiler", "Decompiler settings"], command=layoutMode)
-        self.inf1=customtkinter.CTkLabel(self.frame_1, text='Make sure the paths do not require admin!')
+        self.inf1=customtkinter.CTkLabel(self.frame_1, text='Make sure the paths do not require admin!', text_color="#555")
+        self.inf2=customtkinter.CTkLabel(self.frame_1, text='\u2193 OPTIONAL \u2193', text_color="#555")
         self.lbl1=customtkinter.CTkLabel(self.frame_1, text='Mod name (without .pk3)')
         self.lbl2=customtkinter.CTkButton(self.frame_1, text='Path to 7Zip', fg_color="#424242", hover_color="#696969", command= lambda: smartDirPath(self.t2))
-        self.lbl3=customtkinter.CTkButton(self.frame_1, text='Path to compile (Mod)', fg_color="#424242", hover_color="#696969", command= lambda: smartDirPath(self.t3))
+        self.lbl3=customtkinter.CTkButton(self.frame_1, text='Path to assets (Mod)', fg_color="#424242", hover_color="#696969", command= lambda: smartDirPath(self.t3))
         self.lbl4=customtkinter.CTkButton(self.frame_1, text='Path to test file (.bat)', fg_color="#424242", hover_color="#696969", command= lambda: smartPath(self.t4))
         self.lbl5=customtkinter.CTkButton(self.frame_1, text='Path to PK3 to extract', fg_color="#424242", hover_color="#696969", command= lambda: smartPath(self.t5))
         self.lbl6=customtkinter.CTkButton(self.frame_1, text='Path to logs', fg_color="#424242", hover_color="#696969", command= lambda: smartDirPath(self.t6))
         self.lbl7=customtkinter.CTkButton(self.frame_1, text='Path: Mod destination', fg_color="#424242", hover_color="#696969", command= lambda: smartDirPath(self.t7))
-        self.t1=customtkinter.CTkEntry(self.frame_1)
-        self.t2=customtkinter.CTkEntry(self.frame_1)
-        self.t3=customtkinter.CTkEntry(self.frame_1)
-        self.t4=customtkinter.CTkEntry(self.frame_1)
-        self.t5=customtkinter.CTkEntry(self.frame_1)
-        self.t6=customtkinter.CTkEntry(self.frame_1)
-        self.t7=customtkinter.CTkEntry(self.frame_1, placeholder_text='Default: This .py')
+        self.t3=customtkinter.CTkEntry(self.frame_1, placeholder_text='Required') #location
+        self.t2=customtkinter.CTkEntry(self.frame_1, placeholder_text='Required') #sevenzip
+        self.t1=customtkinter.CTkEntry(self.frame_1, placeholder_text='Default: Folder name') #result
+        self.t7=customtkinter.CTkEntry(self.frame_1, placeholder_text='Default: This .py') #destination
+        self.t4=customtkinter.CTkEntry(self.frame_1, placeholder_text='Default: None') #testbat
+        self.t5=customtkinter.CTkEntry(self.frame_1, placeholder_text='Required') #pk3toextract
+        self.t6=customtkinter.CTkEntry(self.frame_1, placeholder_text='Default: None') #logs
         self.b1=customtkinter.CTkButton(self.frame_1, text='Save settings', command= lambda: run(True, *list(getEVERYTHING())))
         self.b2=customtkinter.CTkButton(self.frame_1, text='Compile', command= lambda: run(False, *list(getEVERYTHING())))
         self.b3=customtkinter.CTkButton(self.frame_1, text='Decompile', command= lambda: unzip(self.t2.get(),self.t5.get(),self.cfg4.get()))
         self.b4=customtkinter.CTkButton(self.frame_1, text='Sort files', command= lambda: sortbynumber(self.t5.get()))
         self.b5=customtkinter.CTkButton(self.frame_1, text='Clean ALL logs', command= lambda: clean_logs(self.t6.get(), "ALL"))
         self.b6=customtkinter.CTkButton(self.frame_1, text='Test', command= lambda: test(self.t4.get()))
-        self.inf2=customtkinter.CTkLabel(self.frame_1, text='NOTE: This does not work with SKINS yet', text_color='#FFFF00')
+        self.inf3=customtkinter.CTkLabel(self.frame_1, text='NOTE: This does not fully work with SKINS yet', text_color='#FFFF00')
         self.cfg1=customtkinter.CTkCheckBox(master=self.frame_1, text="Automatically save after compiling")
-        self.cfg2=customtkinter.CTkCheckBox(master=self.frame_1, text="Automatically delete log after compiling")
+        self.cfg2=customtkinter.CTkCheckBox(master=self.frame_1, text="Automatically delete last log after compiling")
         self.cfg2b=customtkinter.CTkCheckBox(master=self.frame_1, text="Automatically CLEAR ALL logs after compiling")
         self.cfg3=customtkinter.CTkCheckBox(master=self.frame_1, text="Automatically run test file after compiling")
         self.cfg4=customtkinter.CTkCheckBox(master=self.frame_1, text="Automatically sort files after decompiling")
-        self.cfg5=customtkinter.CTkCheckBox(master=self.frame_1, text="Use 7Zip to compile")
         self.preset=customtkinter.CTkLabel(self.frame_1, text=f'Current preset: {os.path.basename(preset)}')
         self.b7=customtkinter.CTkButton(self.frame_1, text='Save preset', command= lambda: savepreset())
         self.b8=customtkinter.CTkButton(self.frame_1, text='Load preset', command= lambda: loadpreset())
@@ -449,27 +435,26 @@ def main(settingsfile=None):
 
     #Create the app's window
     root = customtkinter.CTk()
-    GUI = UX(root, warn)
+    GUI = UI(root, warn)
     root.title("SRB2Compiler")
     root.geometry('320x320')
     root.mainloop()
 
-def run(onlysave=False, result='', sevenzip='', location='', testbat='', pk3toextract='', logs='', destination='',
-        autosave=None, autormlog=None, autoclear=None, autotest=None, autosort=None, usesevenziptocompile=None,
+def run(onlysave=False, location='', sevenzip='', result='', destination='', testbat='', pk3toextract='', logs='',
+        autosave=None, autormlog=None, autoclear=None, autotest=None, autosort=None,
         appearancemode=0):
     variables = vars()
     if not(onlysave):
         location = validate_path(location, "the location of the mod")
-        if not location: return
+        sevenzip = validate_path(sevenzip, "sevenzip's path")
+        if not(location and sevenzip): return
         try:
+            if result == '': result = os.path.basename(location)
             if destination == '': destination = os.path.dirname(os.path.realpath(__file__))
             else: destination = validate_path(destination, "the destination of the mod")
             if not destination: return
-            if usesevenziptocompile:
-                sevenzip = validate_path(sevenzip, "sevenzip's path")
-                if not sevenzip: return
-            clean(location, result, destination, usesevenziptocompile, sevenzip)
-            ziptopk3here(location, result, destination, usesevenziptocompile, sevenzip)
+            clean(sevenzip, result, destination)
+            ziptopk3(location, result, destination, sevenzip)
         except Exception as e:
             print(f"ERROR: {e}")
             messagebox.showerror(title="Error", message=e)

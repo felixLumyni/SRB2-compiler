@@ -1,5 +1,5 @@
 '''
-# SRB2Compiler (Compatibility Mode) v1.995 by Lumyni
+# SRB2Compiler (Compatibility Mode) v1.996 by Lumyni
 # Requires https://www.python.org/ and https://www.7-zip.org/
 # Messes w/ files, only edit this if you know what you're doing!
 '''
@@ -20,35 +20,24 @@ def import_path(path):
     sys.modules[module_name] = module
     return module
 
-def clean(location, result, destination, usesevenziptocompile, sevenzip):
-    os.chdir(destination)
+def clean(sevenzip, result, destination):
     toclean = {
-        "previous zip ("+result+".zip)" : os.path.join(location, result+".zip"),
-        "previous pk3 ("+result+".pk3)" : os.path.join(location, result+".pk3"),
-        "previous pk3 ("+result+".pk3) from destination" : os.path.join(os.getcwd(), result+".pk3")
+        "previous zip ("+result+".zip)" : os.path.join(sevenzip, result+".zip"),
+        "previous pk3 ("+result+".pk3)" : os.path.join(sevenzip, result+".pk3"),
+        "previous pk3 ("+result+".pk3) from destination" : os.path.join(destination, result+".pk3")
     }
-    if usesevenziptocompile:
-        toclean["previous zip ("+result+".zip) from the 7zip directory"] = os.path.join(sevenzip, result+".zip")
-        toclean["previous pk3 ("+result+".pk3) from the 7zip directory"] = os.path.join(sevenzip, result+".pk3")
     for step in toclean:
         path = toclean[step]
         if os.path.exists(path):
             os.unlink(path) ; print(f"Removed {step}.")
         else:
-            print(f"Couldn't find {step}, all clear.")
+            pass #print(f"Couldn't find {step}, all clear.")
 
-def ziptopk3here(location, result, destination, usesevenziptocompile, sevenzip):
-    if usesevenziptocompile:
-        os.chdir(sevenzip)
-        print("----- 7ZIP -----")
-        os.system('7z a '+result+'.zip '+location+"\\* -x!.git")
-        print("----- END OF 7ZIP -----")
-    else:
-        os.chdir(location)
-        print("----- ZIP COMMAND -----")
-        os.system(f'zip {result}.zip -r ../{location} --archive-clear --compression-method deflate -9 -X * -x!.git"')
-        print("----- END OF ZIP COMMAND -----")
-        
+def ziptopk3(location, result, destination, usesevenziptocompile, sevenzip):
+    os.chdir(sevenzip)
+    print("----- 7ZIP -----")
+    os.system('7z a '+result+'.zip '+location+"\\* -x!.git")
+    print("----- END OF 7ZIP -----")
     print("Location compiled to .zip")
 
     os.rename(os.path.join(os.getcwd(), result+'.zip'), result+'.pk3')
@@ -180,7 +169,7 @@ def test(testbat):
         print(f'ERROR: Failed to run the test file. Reason: {e}')
         messagebox.showerror(title='Error', message="Couldn't execute the test file.\nCheck the console for details.")
 
-class UX:
+class UI:
     def __init__(self, root, warn):
         def layoutMode(lol, lmao, rofl, mode=None):
             if mode: self.box1.set(mode)
@@ -200,28 +189,28 @@ class UX:
                 self.t6.configure(state=tkinter.NORMAL)
                 self.t7.configure(state=tkinter.NORMAL)
                 self.inf1.place(x=SPACING, y=00)
+                self.inf2.place(x=R/1.5, y=(OFFSET/2)+SPACING*4)
                 self.b1.place(x=L, y=SPACING)
-                self.lbl1.place(x=L, y=(OFFSET/2)+SPACING*2)
-                self.lbl3.place(x=L, y=(OFFSET/2)+SPACING*3)
-                self.lbl7.place(x=L, y=(OFFSET/2)+SPACING*4)
-                self.lbl4.place(x=L, y=OFFSET+SPACING*8)
-                self.lbl6.place(x=L, y=OFFSET+SPACING*9)
-                self.t1.place(x=R, y=(OFFSET/2)+SPACING*2)
-                self.t3.place(x=R, y=(OFFSET/2)+SPACING*3)
-                self.t7.place(x=R, y=(OFFSET/2)+SPACING*4)
-                self.t4.place(x=R, y=OFFSET+SPACING*8)
-                self.t6.place(x=R, y=OFFSET+SPACING*9)
-                self.cfg1.place(x=L, y=OFFSET+SPACING*5)
-                self.cfg2.place(x=L, y=OFFSET+SPACING*6)
-                self.cfg3.place(x=L, y=OFFSET+SPACING*7)
+                self.lbl2.place(x=L, y=(OFFSET/2)+SPACING*3)
+                self.lbl3.place(x=L, y=(OFFSET/2)+SPACING*2)
+                self.lbl1.place(x=L, y=(OFFSET/2)+SPACING*5)
+                self.lbl7.place(x=L, y=(OFFSET/2)+SPACING*6)
+                self.lbl4.place(x=L, y=(OFFSET/2)+SPACING*7)
+                self.t2.place(x=R, y=(OFFSET/2)+SPACING*3)
+                self.t3.place(x=R, y=(OFFSET/2)+SPACING*2)
+                self.t1.place(x=R, y=(OFFSET/2)+SPACING*5)
+                self.t7.place(x=R, y=(OFFSET/2)+SPACING*6)
+                self.t4.place(x=R, y=(OFFSET/2)+SPACING*7)
+                self.cfg1.place(x=L, y=OFFSET+SPACING*8)
+                self.cfg3.place(x=L, y=OFFSET+SPACING*9)
                 '''offscreen'''
-                self.cfg2b.place(x=L, y=OFFSET+SPACING*10.5)
-                self.cfg5.place(x=L, y=OFFSET+SPACING*11.5)
-                self.lbl2.place(x=L, y=OFFSET+SPACING*12.5)
-                self.t2.place(x=R, y=OFFSET+SPACING*12.5)
+                self.cfg2.place(x=L, y=OFFSET+SPACING*10.5)
+                self.cfg2b.place(x=L, y=OFFSET+SPACING*11.5)
+                self.lbl6.place(x=L, y=OFFSET+SPACING*12.5)
+                self.t6.place(x=R, y=OFFSET+SPACING*12.5)
             elif self.box1.get() == self.box1.cget('values')[2]: #decompiler
                 self.b3.place(x=L, y=SPACING)
-                self.inf2.place(x=SPACING, y=00)
+                self.inf3.place(x=SPACING, y=00)
                 if not self.cfg4var.get(): self.b4.place(x=L, y=SPACING*2)
             elif self.box1.get() == self.box1.cget('values')[3]: #decompiler settings
                 self.inf1.place(x=SPACING, y=00)
@@ -281,8 +270,6 @@ class UX:
             except: self.cfg3.select()
             try: self.cfg4.select() if settings.autosort else self.cfg4.deselect()
             except: self.cfg4.select()
-            try: self.cfg5.select() if settings.usesevenziptocompile else self.cfg5.deselect()
-            except: self.cfg5.deselect()
 
         def getEVERYTHING(): #IMPORTANT: this gets the values based in the order of creation of the entries; mind the run() function
             values = []
@@ -337,7 +324,8 @@ class UX:
         self.box1var = StringVar()
         self.box1var.trace('w',layoutMode)
         self.box1=ttk.Combobox(self.frame_1, textvar=self.box1var, values=["Compiler", "Compiler settings", "Decompiler", "Decompiler settings"])
-        self.inf1=tkinter.Label(self.frame_1, text='Make sure the paths do not require admin!')
+        self.inf1=tkinter.Label(self.frame_1, text='Make sure the paths do not require admin!', fg='#555')
+        self.inf2=tkinter.Label(self.frame_1, text='\u2193 OPTIONAL \u2193',  fg='#555')
         self.lbl1=tkinter.Label(self.frame_1, text='Mod name (without .pk3)')
         self.lbl2=tkinter.Button(self.frame_1, text='Path to 7Zip', command= lambda: smartDirPath(self.t2))
         self.lbl3=tkinter.Button(self.frame_1, text='Path to compile (Mod)', command= lambda: smartDirPath(self.t3))
@@ -345,20 +333,20 @@ class UX:
         self.lbl5=tkinter.Button(self.frame_1, text='Path to PK3 to extract', command= lambda: smartPath(self.t5))
         self.lbl6=tkinter.Button(self.frame_1, text='Path to logs', command= lambda: smartDirPath(self.t6))
         self.lbl7=tkinter.Button(self.frame_1, text='Path: Mod destination', command= lambda: smartDirPath(self.t7))
-        self.t1=tkinter.Entry(self.frame_1)
-        self.t2=tkinter.Entry(self.frame_1)
-        self.t3=tkinter.Entry(self.frame_1)
-        self.t4=tkinter.Entry(self.frame_1)
-        self.t5=tkinter.Entry(self.frame_1)
-        self.t6=tkinter.Entry(self.frame_1)
-        self.t7=tkinter.Entry(self.frame_1)
+        self.t3=tkinter.Entry(self.frame_1) #location
+        self.t2=tkinter.Entry(self.frame_1) #sevenzip
+        self.t1=tkinter.Entry(self.frame_1) #result
+        self.t7=tkinter.Entry(self.frame_1) #destination
+        self.t4=tkinter.Entry(self.frame_1) #testbat
+        self.t5=tkinter.Entry(self.frame_1) #pk3toextract
+        self.t6=tkinter.Entry(self.frame_1) #logs
         self.b1=tkinter.Button(self.frame_1, text='Save settings', command= lambda: run(True, *list(getEVERYTHING())))
         self.b2=tkinter.Button(self.frame_1, text='Compile', command= lambda: run(False, *list(getEVERYTHING())))
         self.b3=tkinter.Button(self.frame_1, text='Decompile', command= lambda: unzip(self.t2.get(),self.t5.get(),self.cfg4.get()))
         self.b4=tkinter.Button(self.frame_1, text='Sort files', command= lambda: sortbynumber(self.t5.get()))
         self.b5=tkinter.Button(self.frame_1, text='Clean ALL logs', command= lambda: clean_logs(self.t6.get(), "ALL"))
         self.b6=tkinter.Button(self.frame_1, text='Test', command= lambda: test(self.t4.get()))
-        self.inf2=tkinter.Label(self.frame_1, text='NOTE: This does not work with SKINS yet', fg='#FF0000')
+        self.inf3=tkinter.Label(self.frame_1, text='NOTE: This does not fully work with SKINS yet', fg='#FF0000')
         self.cfg1var=BooleanVar()
         self.cfg2var=BooleanVar()
         self.cfg2bvar=BooleanVar()
@@ -366,11 +354,10 @@ class UX:
         self.cfg4var=BooleanVar()
         self.cfg5var=BooleanVar()
         self.cfg1=tkinter.Checkbutton(master=self.frame_1, text="Automatically save after compiling", variable=self.cfg1var)
-        self.cfg2=tkinter.Checkbutton(master=self.frame_1, text="Automatically delete log after compiling", variable=self.cfg2var)
+        self.cfg2=tkinter.Checkbutton(master=self.frame_1, text="Automatically delete last log after compiling", variable=self.cfg2var)
         self.cfg2b=tkinter.Checkbutton(master=self.frame_1, text="Automatically CLEAR ALL logs after compiling", variable=self.cfg2bvar)
         self.cfg3=tkinter.Checkbutton(master=self.frame_1, text="Automatically run test file after compiling", variable=self.cfg3var)
         self.cfg4=tkinter.Checkbutton(master=self.frame_1, text="Automatically sort files after decompiling", variable=self.cfg4var)
-        self.cfg5=tkinter.Checkbutton(master=self.frame_1, text="Use 7Zip to compile", variable=self.cfg5var)
         self.preset=tkinter.Label(self.frame_1, text=f'Current preset: {os.path.basename(preset)}')
         self.b7=tkinter.Button(self.frame_1, text='Save preset', command= lambda: savepreset())
         self.b8=tkinter.Button(self.frame_1, text='Load preset', command= lambda: loadpreset())
@@ -420,27 +407,25 @@ def main(settingsfile=None):
 
     #Create the app's window
     root = tkinter.Tk()
-    GUI = UX(root, warn)
+    GUI = UI(root, warn)
     root.title("SRB2Compiler")
     root.geometry('320x320')
     root.mainloop()
 
-def run(onlysave=False, result='', sevenzip='', location='', testbat='', pk3toextract='', logs='', destination='',
-        autosave=None, autormlog=None, autoclear=None, autotest=None, autosort=None, usesevenziptocompile=None):
+def run(onlysave=False, location='', sevenzip='', result='', destination='', testbat='', pk3toextract='', logs='',
+        autosave=None, autormlog=None, autoclear=None, autotest=None, autosort=None):
     variables = vars()
     if not(onlysave):
         location = validate_path(location, "the location of the mod")
-        if not location: return
+        sevenzip = validate_path(sevenzip, "sevenzip's path")
+        if not(location and sevenzip): return
         try:
+            if result == '': result = os.path.basename(location)
             if destination == '': destination = os.path.dirname(os.path.realpath(__file__))
             else: destination = validate_path(destination, "the destination of the mod")
             if not destination: return
-            if usesevenziptocompile: sevenzip = validate_path(sevenzip, "sevenzip's path")
-            if usesevenziptocompile:
-                sevenzip = validate_path(sevenzip, "sevenzip's path")
-                if not sevenzip: return
-            clean(location, result, destination, usesevenziptocompile, sevenzip)
-            ziptopk3here(location, result, destination, usesevenziptocompile, sevenzip)
+            clean(sevenzip, result, destination)
+            ziptopk3(location, result, destination, sevenzip)
         except Exception as e:
             print(f"ERROR: {e}")
             messagebox.showerror(title="Error", message=e)

@@ -1,5 +1,5 @@
 '''
-# SRB2Compiler (Compatibility Mode) v1.996 by Lumyni
+# SRB2Compiler (Compatibility Mode) v1.997 by Lumyni
 # Requires https://www.python.org/ and https://www.7-zip.org/
 # Messes w/ files, only edit this if you know what you're doing!
 '''
@@ -420,7 +420,7 @@ def run(onlysave=False, location='', sevenzip='', result='', destination='', tes
         sevenzip = validate_path(sevenzip, "sevenzip's path")
         if not(location and sevenzip): return
         try:
-            if result == '': result = os.path.basename(location)
+            if result == '': result = os.path.splitext(os.path.basename(location))[0]
             if destination == '': destination = os.path.dirname(os.path.realpath(__file__))
             else: destination = validate_path(destination, "the destination of the mod")
             if not destination: return

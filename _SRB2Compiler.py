@@ -1,5 +1,5 @@
 '''
-# SRB2Compiler v1.997 by Lumyni
+# SRB2Compiler v1.998 by Lumyni
 # Requires https://www.python.org/ and https://www.7-zip.org/
 # Messes w/ files, only edit this if you know what you're doing!
 '''
@@ -469,7 +469,7 @@ def settings_save(variables, settingsfile=False):
     if type(settingsfile) is bool:
         settingsfile = preset
         if preset == "(Default)":
-            settingsfile = os.path.basename(__file__).replace(".py","_settings.txt")
+            settingsfile = __file__.replace(".py","_settings.txt")
     #TODO: don't delete vars that won't be replaced?
     #don't save these
     try: del variables['variables']

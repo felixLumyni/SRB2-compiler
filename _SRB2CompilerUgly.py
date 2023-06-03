@@ -1,10 +1,10 @@
 '''
-# SRB2Compiler (Compatibility Mode) v1.998 by Lumyni
+# SRB2Compiler (Compatibility Mode) v1.999 by Lumyni
 # Requires https://www.python.org/ and https://www.7-zip.org/
 # Messes w/ files, only edit this if you know what you're doing!
 '''
 
-import os, shutil, importlib, sys, subprocess, tkinter
+import os, shutil, importlib, sys, subprocess, tkinter, platform
 from tkinter import messagebox, filedialog
 from os.path import splitext
 from collections import Counter
@@ -494,7 +494,9 @@ def validate_path(path, name="an unknown path"):
     except: pass
     try: path = path.replace("'","")
     except: pass
-    try: path = path.replace("/","\\")
+    try:
+        if platform.system() == "Windows":
+            path = path.replace("/","\\")
     except: pass
     if path == "":
         err = f"{name} is empty."

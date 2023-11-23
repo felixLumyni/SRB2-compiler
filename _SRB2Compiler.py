@@ -1,5 +1,5 @@
 '''
-# SRB2Compiler v1.1001 by Lumyni
+# SRB2Compiler v1.1002 by Lumyni
 # Requires https://www.python.org/ and https://www.7-zip.org/
 # Messes w/ files, only edit this if you know what you're doing!
 '''
@@ -542,8 +542,8 @@ def validate_path(path, name="an unknown path"):
 if __name__ == "__main__":
     required_modules = [
         #(NAME, LINK, TARGET_VERSION),
-        ('packaging', '', '0')
-        ('customtkinter', ': https://github.com/TomSchimansky/CustomTkinter/tags', '513')
+        ('packaging', '', '0'),
+        ('customtkinter', ': https://github.com/TomSchimansky/CustomTkinter/tags', '521')
     ]
     import_required_modules(required_modules)
     sys.dont_write_bytecode = True

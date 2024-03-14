@@ -1,3 +1,12 @@
+# PLEASE DON'T USE THIS, IT'S DEPRECATED
+
+[SRB2Compiler has been updated to V2!](https://github.com/felixLumyni/SRB2Compiler2)
+
+It's simpler to use and way more optimized \o/
+
+<details>
+<summary>Old README</summary>
+  
 # SRB2-Compiler
 A python program to automate the proccess of making [SRB2](https://www.srb2.org/) mods fit for git.
 
@@ -26,3 +35,4 @@ A python program to automate the proccess of making [SRB2](https://www.srb2.org/
 - Decompiler settings page: Specify where your [7-Zip](https://www.7-zip.org/) is installed
 - Decompiler settings page: Specify which PK3 will be cloned to a folder
 - Decompiler page: Decompile your mod, and sort files to remove duplicate files so it can be ran in SRB2 after compiling (WORK IN PROGRESS)
+</details>
